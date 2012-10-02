@@ -6,9 +6,9 @@
 	hehe, this seems like ~10 times slower
 ]]--
 
-local svmasgd2,parent = torch.class('svm.SvmAsgd2','svm.SvmSgd')
+local svmasgd,parent = torch.class('svm.SvmAsgd','svm.SvmSgd')
 
-function svmasgd2:__init(nf,lam)
+function svmasgd:__init(nf,lam)
 	parent.__init(self,nf,lam)
 	-- weights/biases
 	self.a = torch.FloatTensor(nf):zero()
@@ -23,7 +23,7 @@ function svmasgd2:__init(nf,lam)
 	self.averaging = false
 end
 
-function svmasgd2:renorm()
+function svmasgd:renorm()
 	if self.wdiv ~= 1 or self.adiv ~= 1 or self.wfrac ~= 0 then
 		self.a:mul(1/self.adiv)
 		self.a:add(self.wfrac/self.adiv, self.w)
@@ -34,26 +34,26 @@ function svmasgd2:renorm()
 	end
 end
 
-function svmasgd2:wnorm()
-	local wd = self.w:double()
-	local norm = torch.dot(wd,wd) / self.wdiv / self.wdiv
+function svmasgd:wnorm()
+	local w = self.w
+	local norm = torch.dot(w,w) / self.wdiv / self.wdiv
 	if self.regbias then
 		norm = norm + self.ab*self.ab
 	end
 	return norm
 end
 
-function svmasgd2:anorm()
+function svmasgd:anorm()
+	local a = self.a
 	self:renorm()
-	local ad = self.a:double()
-	local norm = torch.dot(ad,ad)
+	local norm = torch.dot(a,a)
 	if self.regbias then
 		norm = norm + self.ab*self.ab
 	end
 	return norm
 end
 
-function svmasgd2:testOne(y,si,sx)
+function svmasgd:testOne(y,si,sx)
 
 	-- local variables
 	local w    = self.w
@@ -79,7 +79,7 @@ function svmasgd2:testOne(y,si,sx)
 	return s,lx,e
 end
 
-function svmasgd2:trainOne(y,si,sx,eta,mu)
+function svmasgd:trainOne(y,si,sx,eta,mu)
 	mu = mu or 1.0
 	-- local variables
 	local w    = self.w
@@ -143,7 +143,7 @@ function svmasgd2:trainOne(y,si,sx,eta,mu)
 
 end
 
-function svmasgd2:trainepoch(data)
+function svmasgd:trainepoch(data)
 	print('Training on ' .. data:size() .. ' samples')
 	-- local variables
 	local lambda = self.lambda
@@ -176,7 +176,7 @@ function svmasgd2:trainepoch(data)
 	self.nupdate = nupdate
 end
 
-function svmasgd2:train(trdata,tedata,epochs)
+function svmasgd:train(trdata,tedata,epochs)
 	self.avstart = self.avstart * trdata:size()
 	parent.train(self,trdata,tedata,epochs)
 	self:renorm()
