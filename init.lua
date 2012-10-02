@@ -26,5 +26,6 @@ end
 
 include('svmsgd.lua')
 include('svmasgd.lua')
+include('svmasgd2.lua')
 include('data.lua')
 

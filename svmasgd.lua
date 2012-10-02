@@ -6,38 +6,24 @@
 	hehe, this seems like ~10 times slower
 ]]--
 
-local svmasgd = torch.class('svm.SvmAsgd')
+local svmasgd2,parent = torch.class('svm.SvmAsgd2','svm.SvmSgd')
 
-function svmasgd:__init(nf,lam)
+function svmasgd2:__init(nf,lam)
+	parent.__init(self,nf,lam)
 	-- weights/biases
-	self.w = torch.FloatTensor(nf):zero()
 	self.a = torch.FloatTensor(nf):zero()
-	self.wdiv = 1
 	self.adiv = 1
-	self.b = 0
 	self.ab = 0
 	self.wfrac = 0
-	-- lambda
-	self.lambda = lam
 	-- step size
-	self.eta0 = 1
 	self.mu0 = 1
 	-- counter
 	self.nupdate = 0
 	self.avstart = 1
 	self.averaging = false
-	-- number of features (since input is sparse)
-	self.nf = nf
-	-- flags
-	self.regbias = false
-	self.svmloss = svm.hingeloss
 end
 
-function svmasgd:loss(a,y)
-	return self.svmloss(a,y)
-end
-
-function svmasgd:renorm()
+function svmasgd2:renorm()
 	if self.wdiv ~= 1 or self.adiv ~= 1 or self.wfrac ~= 0 then
 		self.a:mul(1/self.adiv)
 		self.a:add(self.wfrac/self.adiv, self.w)
@@ -48,7 +34,7 @@ function svmasgd:renorm()
 	end
 end
 
-function svmasgd:wnorm()
+function svmasgd2:wnorm()
 	local wd = self.w:double()
 	local norm = torch.dot(wd,wd) / self.wdiv / self.wdiv
 	if self.regbias then
@@ -57,7 +43,7 @@ function svmasgd:wnorm()
 	return norm
 end
 
-function svmasgd:anorm()
+function svmasgd2:anorm()
 	self:renorm()
 	local ad = self.a:double()
 	local norm = torch.dot(ad,ad)
@@ -67,7 +53,7 @@ function svmasgd:anorm()
 	return norm
 end
 
-function svmasgd:testOne(y,si,sx)
+function svmasgd2:testOne(y,si,sx)
 
 	-- local variables
 	local w    = self.w
@@ -93,7 +79,8 @@ function svmasgd:testOne(y,si,sx)
 	return s,lx,e
 end
 
-function svmasgd:trainOne(y,si,sx,eta,mu)
+function svmasgd2:trainOne(y,si,sx,eta,mu)
+	mu = mu or 1.0
 	-- local variables
 	local w    = self.w
 	local a    = self.a
@@ -156,7 +143,7 @@ function svmasgd:trainOne(y,si,sx,eta,mu)
 
 end
 
-function svmasgd:trainepoch(data)
+function svmasgd2:trainepoch(data)
 	print('Training on ' .. data:size() .. ' samples')
 	-- local variables
 	local lambda = self.lambda
@@ -189,109 +176,9 @@ function svmasgd:trainepoch(data)
 	self.nupdate = nupdate
 end
 
-
-function svmasgd:test(data)
-
-	io.write('Testing on ' .. data:size() .. ' samples\n')
-
-	local loss = 0
-	local nerr = 0
-	for i=1,data:size() do
-		local ex = data[i]
-		local y = ex[1]
-		local si = ex[2][1]
-		local sx = ex[2][2]
-		local s,l,e = self:testOne(y,si,sx)
-		loss = loss + l
-		nerr = nerr + e
-	end
-
-	loss = loss/data:size()
-	nerr = nerr/data:size()
-
-	io.write('Loss=' .. string.format('%.8f',loss))
-	io.write(' Cost=' .. string.format('%.8f',loss + 0.5*self.lambda*self:wnorm()))
-	io.write(' Misclassification=' .. string.format('%.2f %%\n',100*nerr))
-end
-
-function svmasgd:train(trdata,tedata,epochs)
-
+function svmasgd2:train(trdata,tedata,epochs)
 	self.avstart = self.avstart * trdata:size()
-	local trtime = torch.Timer()
-	for i=1,epochs do
-		print('============== Epoch #' .. i .. ' ==============')
-
-		-- train
-		trtime:resume()
-		self:trainepoch(trdata)
-		trtime:stop()
-		print('Total Training Time = ' .. string.format('%.2f secs',trtime:time().real))
-
-		-- test
-		io.write('>> train: ')
-		self:test(trdata)
-		if tedata then
-			io.write('>> test: ')
-			self:test(tedata)
-		end
-	end
+	parent.train(self,trdata,tedata,epochs)
 	self:renorm()
-end
-
-function svmasgd:evalEta(nsample,data,eta)
-	-- clone the weight and bias
-	local w = self.w:clone()
-	local b = self.b
-	local wdiv = self.wdiv
-	for i=1,nsample do
-		local ex = data[i]
-		local y = ex[1]
-		local si = ex[2][1]
-		local sx = ex[2][2]
-
-		self:trainOne(y,si,sx,eta,1.0)
-	end
-	local loss = 0
-	for i=1,nsample do
-		local ex = data[i]
-		local y = ex[1]
-		local si = ex[2][1]
-		local sx = ex[2][2]
-
-		local s,l,e = self:testOne(y,si,sx)
-
-		loss = loss + l
-	end
-	local cost = loss/nsample + 0.5 * self.lambda * self:wnorm()
-	self.w:copy(w)
-	self.b = b
-	self.wdiv = wdiv
-	return cost
-end
-
-function svmasgd:determineEta0(nsample,data)
-	local factor = 2
-	local loeta = 1
-	local locost = self:evalEta(nsample,data,loeta)
-	local hieta = loeta * factor
-	local hicost = self:evalEta(nsample,data,hieta)
-	-- print('lo='..locost .. ' hi=' .. hicost)
-	if locost < hicost then
-		while locost < hicost do
-			hieta = loeta
-			hicost = locost
-			loeta = hieta / factor
-			locost = self:evalEta(nsample,data,loeta)
-		end
-	elseif hicost < locost then
-		while hicost < locost do
-			loeta = hieta
-			locost = hicost
-			hieta = loeta * factor
-			hicost = self:evalEta(nsample,data,hieta)
-		end
-	end
-	self.eta0 = loeta
-	print('# Using eta0='..string.format('%.4f',self.eta0))
 end
 
