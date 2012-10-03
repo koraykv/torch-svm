@@ -1,9 +1,14 @@
 require 'svm'
 
-dtr=svm:dataset('rcv1.train.bin')
+if #arg == 0 then arg = nil end
+
+dtr=svm:dataset('rcv1.test.bin')
 dte=svm:dataset('rcv1.test.bin')
 
-if #arg == 0 then arg = nil end
+if arg and (arg[1] == 'dense' or arg[2] == 'dense') then
+	dtr:dense()
+	dte:dense()
+end
 
 if not arg or (arg and arg[1] == 'sgd-hinge') then
 	print('======================================')
