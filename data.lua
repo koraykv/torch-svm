@@ -1,20 +1,28 @@
 --[[
-	A simple dataset table, this reads binary
-	formatted svm data.
+	A simple dataset table
+	If the filename extension is .bin, then 
+	it will be assumed to be binary, otherwise it will be assumed
+	ascii formatted file.
+	The format of the file is svmlight format, for binary format,
+	format suggested by Leon Bottou is used.
 ]]--
 
-function svm:dataset(fname)
+function svm.dataset(fname)
 	if not paths.filep(fname) then
 		error('File does not exist ' .. fname)
 	end
 
-	local data,maxdim = svm.binread(fname,true)
+	local data,maxdim
+	if fname:match('%.bin') then
+		data,maxdim = svm.binread(fname,true)
+	else
+		data,maxdim = svm.ascread(fname)
+	end
 	local nsamples = #data
 	local dataset = {}
 	function dataset:size() return nsamples end
 	function dataset:nfeature() return maxdim end
-	function dataset:setbuffersize(bsize) buffersize = bsize end
-	function dataset:getbuffersize() return buffersize end
+	function dataset:data() return data end
 
 
 	-- be careful , this is just for experimentation, it will be very very very slooooooow.

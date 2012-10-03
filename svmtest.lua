@@ -2,14 +2,15 @@ require 'svm'
 
 if #arg == 0 then arg = nil end
 
-dtr=svm:dataset('rcv1.test.bin')
-dte=svm:dataset('rcv1.test.bin')
+dtr=svm.dataset('rcv1.train.bin')
+dte=svm.dataset('rcv1.test.bin')
 
 if arg and (arg[1] == 'dense' or arg[2] == 'dense') then
 	dtr:dense()
 	dte:dense()
 end
 
+-- These tests are comparing with Leon Bottou's experiments.
 if not arg or (arg and arg[1] == 'sgd-hinge') then
 	print('======================================')
 	print('SVM SGD HingeLoss')
