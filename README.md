@@ -1,7 +1,7 @@
 torch-svm
 =========
 
-Reimplementation of Leon Bottou's svmsgd and svmasgd. 
+Reimplementation of Leon Bottou's svmsgd and svmasgd (http://leon.bottou.org/projects/sgd). 
 This implementation is 2-10 times slower depending on the sparsity of the input.
 
 ```
