@@ -2,6 +2,7 @@ require 'svm'
 
 if #arg == 0 then arg = nil end
 
+-- you can get these files use Leon Bottou's sgd project.
 dtr=svm.dataset('rcv1.train.bin')
 dte=svm.dataset('rcv1.test.bin')
 
