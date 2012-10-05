@@ -15,6 +15,17 @@ SET(src
 SET(luasrc init.lua 
   )
 
+SET(blassrc
+	liblinear/blas/blas.h
+	liblinear/blas/blasp.h
+	liblinear/blas/daxpy.c
+	liblinear/blas/ddot.c
+	liblinear/blas/dnrm2.c
+	liblinear/blas/dscal.c
+)
+
+ADD_LIBRARY(liblinearblas STATIC ${blassrc})
+
 ADD_TORCH_PACKAGE(liblinear "${src}" "${luasrc}" "LIBLINEAR Interface")
 
-TARGET_LINK_LIBRARIES(liblinear luaT TH ${CMAKE_CURRENT_SOURCE_DIR}/liblinear/blas/blas.a)
+TARGET_LINK_LIBRARIES(liblinear luaT TH liblinearblas)
