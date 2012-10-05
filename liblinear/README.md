@@ -1,9 +1,7 @@
 torch-svm/liblinear
 ===================
 
-Reimplementation of Leon Bottou's svmsgd and svmasgd.
-I would suggest using Leon's stuff (http://leon.bottou.org/projects/sgd)
-This implementation is 2-10 times slower :) depending on the sparsity.
+This is wrapper around the well known LIBLINEAR library (http://www.csie.ntu.edu.tw/~cjlin/liblinear/).
 
 ```
 git clone git://github.com/koraykv/torch-svm.git
