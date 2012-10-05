@@ -18,7 +18,7 @@ Building
 
 ```
 git clone git://github.com/koraykv/torch-svm.git
-torch-deploy svm
-torch-deploy sgd
-torch-deploy liblinear
+cd torch-svm
+torch-pkg deploy sgd
+torch-pkg deploy liblinear
 ```
