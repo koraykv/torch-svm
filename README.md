@@ -23,6 +23,14 @@ torch-pkg deploy sgd
 torch-pkg deploy liblinear
 ```
 
-Demo
+Using
 ----
 
+```
+require 'svm'
+require 'liblinear'
+
+d = svm.ascread('liblinear/liblinear/heart_scale')
+model = liblinear.train(d)
+labels,accuracy,dec = liblinear.predict(d,model)
+```
