@@ -1,7 +1,21 @@
-# We compile all existing packages
-FILE(GLOB _all_files *)
-FOREACH(_file ${_all_files})
-  IF(EXISTS "${_file}/CMakeLists.txt")
-    ADD_SUBDIRECTORY(${_file})
-  ENDIF(EXISTS "${_file}/CMakeLists.txt")
-ENDFOREACH(_file ${_all_files})
+SET(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
+
+CMAKE_MINIMUM_REQUIRED(VERSION 2.6 FATAL_ERROR)
+CMAKE_POLICY(VERSION 2.6)
+
+
+FIND_PACKAGE(Torch REQUIRED)
+
+ADD_SUBDIRECTORY(sgd)
+ADD_SUBDIRECTORY(liblinear)
+
+SET(utilsrc init.c data.c util.c)
+ADD_LIBRARY(svmutil SHARED ${utilsrc})
+TARGET_LINK_LIBRARIES(svmutil luaT TH)
+INSTALL(TARGETS svmutil LIBRARY DESTINATION ${Torch_INSTALL_LUA_CPATH_SUBDIR})
+
+SET(src)
+SET(luasrc init.lua data.lua)
+
+ADD_TORCH_PACKAGE(svm "${src}" "${luasrc}")
+ADD_TORCH_DOK(dok svm "Machine Learning" "Support Vector Machines" 3.99)

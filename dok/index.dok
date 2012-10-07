@@ -1,0 +1,60 @@
+====== Support Vector Machines =======
+{{anchor:svm.dok}}
+
+This package provides popular SVM implementations.
+
+===== What is implemented? =====
+
+  * [[sgd#svm.sgd|svmsgd]] : Reimplementation of [[http://leon.bottou.org/projects/sgd|Leon Bottou's svmsgd and svmasgd]].
+  * [[liblinear#svm.liblinear|liblinear]] : A wrapper around the well known [[http://www.csie.ntu.edu.tw/~cjlin/liblinear/|LIBLINEAR library]].
+
+===== I/O Utilities =====
+
+It is very common for SVMs to use sparse data as input. For that reason, ''svm'' package provides sparse data reading and writing in ''SVMLight'' format.
+
+==== d = svm.ascread(filename) ====
+{{anchor:svm.ascread}}
+
+This function returns a table of tables representing the data given in file ''filename''.
+
+  - ''#d'' is equal to the number of rows in ''filename'', which is equal to the number of samples.
+  - ''d[i]'' is a table with ''2'' entries.
+    - ''d[i][1]'' is a number that contains the label value for ''ith'' sample.
+    - ''d[i][2]'' is a table with ''2'' entries representing sparse input features.
+      - ''d[i][2][1]'' is a ''torch.IntTensor'' containing ''1-based'' indices of the non-zero features.
+      - ''d[2][2][2]'' is a ''torch.FloatTensor'' containing the values of non-zero features.
+
+==== d = svm.ascwrite(filename,data) ====
+{{anchor:svm.ascwrite}}
+
+This function writes the data object (which should be in format returned by [[#svmascread|svm.ascread]]) into file ''filename''.
+
+==== d = svm.binread(filename) ====
+{{anchor:svm.binread}}
+
+This function is equivalent to [[#svmascread|svm.ascread]], except it operates on binary data. This format is especially useful for reading large data files. The specification of the format is the same as the one used in [[http://leon.bottou.org/projects/sgd|Leon Bottou's sgd project]].
+
+==== d = svm.bininfo(filename) ====
+{{anchor:svm.bininfo}}
+
+This function goes over a binary input file and prints out the following information.
+  - number of positive samples in the dataset.
+  - number of negative samples in the dataset.
+  - total number of samples.
+  - maximum number of feature dimensions.
+
+==== d = svm.dataset(filename) ====
+{{anchor:svm.dataset}}
+
+This function returns a dataset object that can be used with [[sgd#svmsgd|stochastic sradient SVMs]]. Returned object provides useful functions to query the size and dimension of the whole data.
+
+  - ''d[i]'' is a table with ''2'' entries.
+    - ''d[i][1]'' is a number that contains the label value for ''ith'' sample.
+    - ''d[i][2]'' is a table with ''2'' entries representing sparse input features.
+      - ''d[i][2][1]'' is a ''torch.IntTensor'' containing ''1-based'' indices of the non-zero features.
+      - ''d[2][2][2]'' is a ''torch.FloatTensor'' containing the values of non-zero features.
+  * ''d:size()'' : number of samples.
+  * ''d:nfeature()'' : maximum number of features in the dataset.
+  * ''d:data()'' : original data structure returned from [[#svmascread|svm.ascread]] or [[#svmbinread|svm.binread]]. If the extension of ''filename'' is ''.bin'', then [[#svmbinread|svm.binread]] is used, otherwise [[#svmascread|svm.ascread]] is used.
+  * ''d:dense()'' : sets a flag so that ''d[i]'' returns dense data. ''d[i][2][1]'' is ''nil'' and ''d[i][2][2]'' is a ''torch.FloatTensor'' of size ''data:nfeature()''. [[sgd#svmsgd|svm.SvmSgd and svm.SvmAsgd]] accept dense input type too.
+

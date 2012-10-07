@@ -1,0 +1,66 @@
+====== Stochastic Gradient Descent SVM =======
+{{anchor:svm.sgd.dok}}
+
+This package provides a Torch7 implementation of SVM and ASVM from Leon Bottou's [[http://leon.bottou.org/projects/sgd|sgd project]].
+
+===== A Sample Session =====
+
+<code lua>
+require 'svm'
+
+dtr=svm.dataset('liblinear/liblinear/heart_scale')
+dte=svm.dataset('liblinear/liblinear/heart_scale')
+
+print('======================================')
+print('SVM SGD HingeLoss')
+mysvm = svm.SvmSgd(dtr:nfeature(),1e-4)
+print(mysvm)
+mysvm:determineEta0(1001,dtr)
+mysvm:train(dtr,dte,5)
+l,acc,d = mysvm:predict(dte)
+</code>
+And you should see 
+<code>
+Accuracy=84.4444 % (228/270)
+</code>
+as the last line.
+
+Note that the dataset used for stochastic svms has to be read through ''svm.dataset'' function.
+
+===== Stochastic Gradient Descent SVM Classes =====
+
+==== svm.SvmSgd(nfeatures,lambda) ====
+{{anchor:svm.svmsgd}}
+
+This class provides stochastic gradient descent solver for standard linear SVM. There are several options that can be set to further configure the class.
+
+  * ''self.regbias'' : default ''0'', set to ''1'' for regularizing the bias.
+  * ''self.svmloss'' : default ''svm.hingeloss'', you can also use ''svm.logloss'' or ''svm.squaredhingeloss''.
+
+==== svm.SvmSgd.determineEta0(nsample, data) ====
+ {{anchor:svm.svmsgd.detEta}}
+
+This function evaluates several initial learning rates to find a suitable one to start the training. ''nsample'' samples are used from set ''data'' for this process. The ''self.eta0'' field of the class is set automatically by this function. If not called, the default initial learning rate ''1'' is used in training.
+
+==== svm.SvmSgd.train(dtr, dte , nepoch) ====
+{{anchor:svm.svmsgd.train}}
+
+ This function trains the SVM for ''nepoch'' epochs over the training set ''dtr''. If ''dte'' is given, the performance on ''dte'' is tested after every epoch of training.
+
+==== label,accuracy,decision_vals = svm.SvmSgd.predict(data) ====
+{{anchor:svm.svmsgd.predict}}
+
+This function runs testing on given dataset ''data'' and returns 3 outputs.
+  - ''label'' : predicted labels for each sample.
+  - ''accuracy'' : A table of 3 elements, ''{accuracy, loss, cost}''.
+  - ''decision_vals'' : The decision value (''wx+b'') for each sample.
+
+==== svm.SvmAsgd(nfeatures,lambda) ====
+{{anchor:svm.svmasgd}}
+
+This class provides Averaging stochastic gradient descent solver for linear SVM. In addition to the options in [[#svmsvmsgd|svm.SvmSgd]], the following options are available.
+
+  * ''self.avstart'' : default ''1'', set to any positive integer to specify the number of epochs at which to start averaging the weights.
+
+This class also provides the same functions as in [[#svmsvmsgd|svm.SvmSgd]] for training, testing and finding initial learning rate.
+

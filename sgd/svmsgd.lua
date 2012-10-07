@@ -135,6 +135,27 @@ function svmsgd:test(data)
 	io.write(' Misclassification=' .. string.format('%.2f %%\n',100*nerr))
 end
 
+function svmsgd:predict(data)
+	local tlabel = torch.IntTensor(data:size())
+	local tdec = torch.Tensor(data:size())
+	local loss = 0
+	local nerr = 0
+	for i=1,data:size() do
+		local ex = data[i]
+		local s,l,e = self:testOne(ex[1], ex[2][1], ex[2][2])
+		loss = loss + l
+		nerr = nerr + e
+		if e == 1 then tlabel[i] = -ex[1] else tlabel[i] = ex[1] end
+		tdec[i] = s
+	end
+
+	loss = loss/data:size()
+	nerr = nerr/data:size()
+	io.write('Accuracy=' .. string.format('%.4f %% (%d/%d)\n',
+		100-100*nerr,data:size()-nerr*data:size(),data:size()))
+	return tlabel,{100-100*nerr,loss,loss + 0.5*self.lambda*self:wnorm()},tdec
+end
+
 function svmsgd:train(trdata,tedata,epochs)
 
 	local trtime = torch.Timer()

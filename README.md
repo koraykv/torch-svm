@@ -3,10 +3,16 @@ torch-svm
 
 SVM packages for Torch7.
 
-So far, there are two packages available. The first one is Leon Bottou's sgd and asgd algorithms.
-These algorithms are reimplemented in Torch7. The second package is a wrapper around the LIBLINEAR
-library. This package just provides a wrapper around LIBLINEAR code that is already included in
-source form.
+torch-svm/sgd
+-------------
+
+Reimplementation of Leon Bottou's svmsgd and svmasgd (http://leon.bottou.org/projects/sgd). 
+This implementation is 2-10 times slower depending on the sparsity of the input.
+
+torch-svm/liblinear
+-------------------
+
+This is wrapper around the well known LIBLINEAR library (http://www.csie.ntu.edu.tw/~cjlin/liblinear/).
 
 Requirements
 ------------
@@ -19,8 +25,8 @@ Building
 ```
 git clone git://github.com/koraykv/torch-svm.git
 cd torch-svm
-torch-pkg deploy sgd
-torch-pkg deploy liblinear
+torch-pkg deploy
+torch-pkg deploy
 ```
 
 Using
@@ -28,7 +34,6 @@ Using
 
 ```
 require 'svm'
-require 'liblinear'
 
 d = svm.ascread('liblinear/liblinear/heart_scale')
 model = liblinear.train(d)
