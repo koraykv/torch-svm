@@ -26,7 +26,6 @@ Building
 git clone git://github.com/koraykv/torch-svm.git
 cd torch-svm
 torch-pkg deploy
-torch-pkg deploy
 ```
 
 Using
