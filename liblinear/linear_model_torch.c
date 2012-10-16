@@ -7,7 +7,7 @@
 
 #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
 
-int model_to_torch_structure(lua_State *L, struct model *model_)
+int liblinear_model_to_torch_structure(lua_State *L, struct model *model_)
 {
 	int i;
 	int nr_w;
@@ -76,7 +76,7 @@ int model_to_torch_structure(lua_State *L, struct model *model_)
 	return 1;
 }
 
-int torch_structure_to_model(struct model *model_, lua_State *L)
+int torch_structure_to_liblinear_model(struct model *model_, lua_State *L)
 {
 	int i, num_of_fields;
 	int nr_w;

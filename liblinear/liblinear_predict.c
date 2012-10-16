@@ -242,7 +242,7 @@ static int liblinear_predict( lua_State *L )
 	}
 
 	model_ = Malloc(struct model, 1);
-	torch_structure_to_model(model_, L);
+	torch_structure_to_liblinear_model(model_, L);
 	lua_pop(L,1);
 
 	if(prob_estimate_flag)

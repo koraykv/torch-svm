@@ -374,7 +374,7 @@ static int liblinear_train( lua_State *L )
 		else
 		{
 			model_ = train(&prob, &param);
-			model_to_torch_structure(L, model_);
+			liblinear_model_to_torch_structure(L, model_);
 			free_and_destroy_model(&model_);
 		}
 		destroy_param(&param);
