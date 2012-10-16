@@ -21,6 +21,7 @@ SET(blassrc
 	liblinear/blas/dscal.c
 )
 
+SET(CMAKE_C_FLAGS "-fPIC ${CMAKE_C_FLAGS}")
 ADD_LIBRARY(liblinearblas STATIC ${blassrc})
 
 ADD_TORCH_PACKAGE(liblinear "${src}" "${luasrc}" "LIBLINEAR Interface")
