@@ -63,12 +63,12 @@ as the last line.
 
 Note that the dataset used for ''liblinear'' is the raw output of ''svm.ascread''.
 
-===== model = liblinear.train( data [, options]) =====
+==== model = liblinear.train( data [, options]) ====
 {{anchor:svm.liblinear.train}}
 
 This function trains a model using the dataset and given options. The options are given as a string and has the same syntax as command line liblinear ''train'' program arguments. An empty call to ''liblinear.train()'' prints the usage information.
 
-===== label,accuracy,decision_vals = liblinear.predict( data , model [, options]) =====
+==== label,accuracy,decision = liblinear.predict(data, model [,options]) ====
 {{anchor:svm.liblinear.predict}}
 
 This functions tests on the ''data'' using the ''model'' trained in previous step. Again, the options are given as a single string and the syntax is the same as ''predict'' program arguments. Any empty call to ''liblinear.predict()'' prints the usage information.
