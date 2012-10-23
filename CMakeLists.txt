@@ -8,6 +8,7 @@ FIND_PACKAGE(Torch REQUIRED)
 
 ADD_SUBDIRECTORY(sgd)
 ADD_SUBDIRECTORY(liblinear)
+ADD_SUBDIRECTORY(libsvm)
 
 SET(utilsrc init.c data.c util.c)
 ADD_LIBRARY(svmutil SHARED ${utilsrc})
