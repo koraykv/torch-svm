@@ -38,3 +38,10 @@ d = svm.ascread('liblinear/liblinear/heart_scale')
 model = liblinear.train(d)
 labels,accuracy,dec = liblinear.predict(d,model)
 ```
+
+Status
+------
+
+ - svmsgd and svmasgd implementations are supposed to be complete.
+ - LIBLINEAR interface is supposed to be complete, I did not check all the possible flags. If you find that something is not working, let me know.
+ - LIBSVM interface is mostly complete, but as of now passing in a precomputed kernel option is missing.
