@@ -1,0 +1,68 @@
+====== LIBSVM Interface =======
+{{anchor:svm.libsvm.dok}}
+
+This package provides an interface for the well known [[http://www.csie.ntu.edu.tw/~cjlin/libsvm/|LIBSVM library]]. The interface follows the interface for matlab very closely.
+
+Two functions are provided, ''libsvm.train'' and ''libsvm.predict''. Calling these functions with no arguments prints the usage information.
+
+<code>
+libsvm.train()
+t7> libsvm.train( )
+Usage: model = svmtrain(training_data, 'libsvm_options');
+libsvm_options:
+-s svm_type : set type of SVM (default 0)
+	0 -- C-SVC
+	1 -- nu-SVC
+	2 -- one-class SVM
+	3 -- epsilon-SVR
+	4 -- nu-SVR
+-t kernel_type : set type of kernel function (default 2)
+	0 -- linear: u'*v
+	1 -- polynomial: (gamma*u'*v + coef0)^degree
+	2 -- radial basis function: exp(-gamma*|u-v|^2)
+	3 -- sigmoid: tanh(gamma*u'*v + coef0)
+	4 -- precomputed kernel (kernel values in training_instance_matrix)
+-d degree : set degree in kernel function (default 3)
+-g gamma : set gamma in kernel function (default 1/num_features)
+-r coef0 : set coef0 in kernel function (default 0)
+-c cost : set the parameter C of C-SVC, epsilon-SVR, and nu-SVR (default 1)
+-n nu : set the parameter nu of nu-SVC, one-class SVM, and nu-SVR (default 0.5)
+-p epsilon : set the epsilon in loss function of epsilon-SVR (default 0.1)
+-m cachesize : set cache memory size in MB (default 100)
+-e epsilon : set tolerance of termination criterion (default 0.001)
+-h shrinking : whether to use the shrinking heuristics, 0 or 1 (default 1)
+-b probability_estimates : whether to train a SVC or SVR model for probability estimates, 0 or 1 (default 0)
+-wi weight : set the parameter C of class i to weight*C, for C-SVC (default 1)
+-v n : n-fold cross validation mode
+-q : quiet mode (no outputs)
+</code>
+
+===== A Sample Session =====
+<code lua>
+
+dtr=svm.ascread('libsvm/libsvm/heart_scale')
+dte=svm.ascread('libsvm/libsvm/heart_scale')
+
+print('======================================')
+print('LIBSVM C-SVC RBF Kernel support vector classification')
+model = libsvm.train(dtr)
+l,acc,d = libsvm.predict(dte,model)
+</code>
+And you should see 
+<code>
+Accuracy = 86.6667% (234/270) (classification)
+</code>
+as the last line.
+
+Note that the dataset used for ''libsvm'' is the raw output of ''svm.ascread''.
+
+==== model = libsvm.train( data [, options]) ====
+{{anchor:svm.libsvm.train}}
+
+This function trains a model using the dataset and given options. The options are given as a string and has the same syntax as command line libsvm ''train'' program arguments. An empty call to ''libsvm.train()'' prints the usage information.
+
+==== label,accuracy,decision = libsvm.predict(data, model [,options]) ====
+{{anchor:svm.libsvm.predict}}
+
+This functions tests on the ''data'' using the ''model'' trained in previous step. Again, the options are given as a single string and the syntax is the same as ''predict'' program arguments. Any empty call to ''libsvm.predict()'' prints the usage information.
+
