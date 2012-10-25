@@ -45,6 +45,7 @@ liblinear_options:
 </code>
 
 ===== A Sample Session =====
+
 <code lua>
 
 dtr=svm.ascread('liblinear/liblinear/heart_scale')

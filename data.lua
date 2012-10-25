@@ -20,7 +20,7 @@ function svm.ascwrite(fname,data)
 	local of = torch.DiskFile(fname,'w')
 	for i=1,#data do
 		local ex = data[i]
-		of:writeString(string.format('%+d %s\n', ex[1], vectostr(ex[2][1],ex[2][2])))
+		of:writeString(string.format('%+g %s\n', ex[1], vectostr(ex[2][1],ex[2][2])))
 	end
 	of:close()
 end
@@ -34,9 +34,10 @@ function svm.ascread(fname)
 		if not label then
 			error('could not read label')
 		end
-		if label ~= 1 and label ~=-1 then
-			error('label has to be +1 or -1')
-		end
+		-- label can be anything
+		-- if label ~= 1 and label ~=-1 then
+		-- 	error('label has to be +1 or -1')
+		-- end
 		local vals = {}
 		local inds = {}
 		local indcntr = 0

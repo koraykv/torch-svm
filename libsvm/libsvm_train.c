@@ -223,6 +223,92 @@ int parse_command_line(lua_State *L)
 	return 0;
 }
 
+// read in a problem (in svmlight format)
+int read_problem_dense(lua_State *L)
+{
+	int i, j, k;
+	int elements, max_index, sc, label_vector_row_num;
+	double *samples, *labels;
+
+	prob.x = NULL;
+	prob.y = NULL;
+	x_space = NULL;
+
+	lua_pushnumber(L,1);
+	lua_gettable(L,-2);
+	THFloatTensor *tlabels = luaT_checkudata(L,1,"torch.FloatTensor");
+	lua_pushnumber(L,2);
+	lua_gettable(L,-2);
+	THFloatTensor *tsamples = luaT_checkudata(L,2,"torch.FloatTensor");
+
+	labels = THFloatTensor_data(tlabels);
+	samples = THFloatTensor_data(tsamples);
+	sc = (int)tsamples->size[1];
+
+	elements = 0;
+	// the number of instance
+	prob.l = (int)tsamples->size[0];
+	label_vector_row_num = (int)tlabels->size[0];
+
+	if(label_vector_row_num!=prob.l)
+	{
+		printf("Length of label vector does not match # of instances.\n");
+		return -1;
+	}
+
+	if(param.kernel_type == PRECOMPUTED)
+		elements = prob.l * (sc + 1);
+	else
+	{
+		for(i = 0; i < prob.l; i++)
+		{
+			for(k = 0; k < sc; k++)
+				if(samples[i * sc + k] != 0)
+					elements++;
+			// count the '-1' element
+			elements++;
+		}
+	}
+
+	prob.y = Malloc(double,prob.l);
+	prob.x = Malloc(struct svm_node *,prob.l);
+	x_space = Malloc(struct svm_node, elements);
+
+	max_index = sc;
+	j = 0;
+	for(i = 0; i < prob.l; i++)
+	{
+		prob.x[i] = &x_space[j];
+		prob.y[i] = labels[i];
+
+		for(k = 0; k < sc; k++)
+		{
+			if(param.kernel_type == PRECOMPUTED || samples[k * prob.l + i] != 0)
+			{
+				x_space[j].index = k + 1;
+				x_space[j].value = samples[i*sc + k];
+				j++;
+			}
+		}
+		x_space[j++].index = -1;
+	}
+
+	if(param.gamma == 0 && max_index > 0)
+		param.gamma = 1.0/max_index;
+
+	if(param.kernel_type == PRECOMPUTED)
+		for(i=0;i<prob.l;i++)
+		{
+			if((int)prob.x[i][0].value <= 0 || (int)prob.x[i][0].value > max_index)
+			{
+				printf("Wrong input format: sample_serial_number out of range\n");
+				return -1;
+			}
+		}
+
+	return 0;
+}
+
 
 int read_problem_sparse(lua_State *L)
 {
@@ -337,9 +423,7 @@ static int libsvm_train( lua_State *L )
 
 		if(param.kernel_type == PRECOMPUTED)
 		{
-			printf("No PRECOMPUTED Kernel yet\n");
-			return 0;
-			//err = read_problem_dense(L);
+			err = read_problem_dense(L);
 		}
 		else
 			err = read_problem_sparse(L);

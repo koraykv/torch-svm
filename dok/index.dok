@@ -13,10 +13,10 @@ This package provides popular SVM implementations.
 
 It is very common for SVMs to use sparse data as input. For that reason, ''svm'' package provides sparse data reading and writing in ''SVMLight'' format.
 
-==== d = svm.ascread(filename) ====
+==== d, maxdim = svm.ascread(filename) ====
 {{anchor:svm.ascread}}
 
-This function returns a table of tables representing the data given in file ''filename''.
+This function returns a table ''d' of tables representing the data given in file ''filename''.
 
   - ''#d'' is equal to the number of rows in ''filename'', which is equal to the number of samples.
   - ''d[i]'' is a table with ''2'' entries.
@@ -24,18 +24,19 @@ This function returns a table of tables representing the data given in file ''fi
     - ''d[i][2]'' is a table with ''2'' entries representing sparse input features.
       - ''d[i][2][1]'' is a ''torch.IntTensor'' containing ''1-based'' indices of the non-zero features.
       - ''d[2][2][2]'' is a ''torch.FloatTensor'' containing the values of non-zero features.
+It also returns the maximum number of dimensions in the dataset.
 
-==== d = svm.ascwrite(filename,data) ====
+==== svm.ascwrite(filename,data) ====
 {{anchor:svm.ascwrite}}
 
 This function writes the data object (which should be in format returned by [[#svmascread|svm.ascread]]) into file ''filename''.
 
-==== d = svm.binread(filename) ====
+==== d, maxdim = svm.binread(filename) ====
 {{anchor:svm.binread}}
 
 This function is equivalent to [[#svmascread|svm.ascread]], except it operates on binary data. This format is especially useful for reading large data files. The specification of the format is the same as the one used in [[http://leon.bottou.org/projects/sgd|Leon Bottou's sgd project]].
 
-==== d = svm.bininfo(filename) ====
+==== nsamples, maxdim = svm.bininfo(filename) ====
 {{anchor:svm.bininfo}}
 
 This function goes over a binary input file and prints out the following information.
@@ -43,6 +44,8 @@ This function goes over a binary input file and prints out the following informa
   - number of negative samples in the dataset.
   - total number of samples.
   - maximum number of feature dimensions.
+
+It returns two numbers, number of samples and maximum number of dimensions. 
 
 ==== d = svm.dataset(filename) ====
 {{anchor:svm.dataset}}

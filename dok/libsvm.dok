@@ -38,6 +38,7 @@ libsvm_options:
 </code>
 
 ===== A Sample Session =====
+
 <code lua>
 
 dtr=svm.ascread('libsvm/libsvm/heart_scale')
