@@ -2,9 +2,9 @@
 SET(src)
 
 SET(luasrc init.lua 
-  svmsgd.lua
-  svmasgd.lua
-  svmloss.lua
+  sgd.lua
+  asgd.lua
+  loss.lua
   )
 
 INCLUDE_DIRECTORIES(${Torch_SOURCE_INCLUDES})

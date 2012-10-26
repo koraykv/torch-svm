@@ -1,4 +1,4 @@
-
+require 'torch'
 require 'libsvmutil'
 require 'svmsgd'
 require 'liblinear'

@@ -1,4 +1,4 @@
-include('svmsgd.lua')
-include('svmasgd.lua')
-include('svmloss.lua')
+include('loss.lua')
+include('sgd.lua')
+include('asgd.lua')
 
