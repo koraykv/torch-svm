@@ -278,8 +278,11 @@ static int libsvm_predict(lua_State *L)
 
 
 			// put options in argv[]
-			const char *tcmd = lua_tostring(L,3);
-			if((argv[argc] = strtok((char*)tcmd, " ")) != NULL)
+			size_t slen;
+			const char *tcmd = lua_tolstring(L,3,&slen);
+			char cmd[slen];
+			strcpy(cmd,tcmd);
+			if((argv[argc] = strtok((char*)cmd, " ")) != NULL)
 				while((argv[++argc] = strtok(NULL, " ")) != NULL)
 					;
 
