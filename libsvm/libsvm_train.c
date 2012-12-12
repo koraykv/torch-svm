@@ -231,7 +231,7 @@ int read_problem_dense(lua_State *L)
 {
 	int i, j, k;
 	int elements, max_index, sc, label_vector_row_num;
-	double *samples, *labels;
+	float *samples, *labels;
 
 	prob.x = NULL;
 	prob.y = NULL;
