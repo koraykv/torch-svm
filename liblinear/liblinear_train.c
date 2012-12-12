@@ -142,8 +142,11 @@ int parse_command_line(lua_State *L)
 	// put options in argv[]
 	if(nrhs > 1)
 	{
-		const char *tcmd = lua_tostring(L,2);
-		if((argv[argc] = strtok((char*)tcmd, " ")) != NULL)
+	        size_t slen;
+		const char *tcmd = lua_tolstring(L,2,&slen);
+		char cmd[slen];
+		strcpy(cmd,tcmd);
+		if((argv[argc] = strtok((char*)cmd, " ")) != NULL)
 			while((argv[++argc] = strtok(NULL, " ")) != NULL)
 				;
 
