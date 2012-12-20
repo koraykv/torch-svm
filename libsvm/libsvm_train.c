@@ -111,6 +111,7 @@ int parse_command_line(lua_State *L)
 {
 	int i, argc = 1;
 	char *argv[CMD_LEN/2];
+	char cmd[CMD_LEN];
 	void (*print_func)(const char *) = print_string_default;
 
 	// default values
@@ -141,8 +142,7 @@ int parse_command_line(lua_State *L)
 		// put options in argv[]
 	        size_t slen;
 		const char *tcmd = lua_tolstring(L,2,&slen);
-		char cmd[slen];
-		strcpy(cmd,tcmd);
+		strncpy(cmd,tcmd,slen);
 		if((argv[argc] = strtok((char*)cmd, " ")) != NULL)
 			while((argv[++argc] = strtok(NULL, " ")) != NULL)
 				;
