@@ -16,7 +16,7 @@ It is very common for SVMs to use sparse data as input. For that reason, ''svm''
 ==== d, maxdim = svm.ascread(filename) ====
 {{anchor:svm.ascread}}
 
-This function returns a table ''d' of tables representing the data given in file ''filename''.
+This function returns a table ''d'' of tables representing the data given in file ''filename''.
 
   - ''#d'' is equal to the number of rows in ''filename'', which is equal to the number of samples.
   - ''d[i]'' is a table with ''2'' entries.
