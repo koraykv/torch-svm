@@ -11,12 +11,25 @@ ADD_SUBDIRECTORY(liblinear)
 ADD_SUBDIRECTORY(libsvm)
 
 SET(utilsrc init.c data.c util.c)
-ADD_LIBRARY(svmutil SHARED ${utilsrc})
+ADD_LIBRARY(svmutil MODULE ${utilsrc})
 TARGET_LINK_LIBRARIES(svmutil luaT TH)
+
+IF(LUALIB)
+  TARGET_LINK_LIBRARIES(svmutil ${LUALIB})
+ELSE(LUALIB)
+  FIND_LIBRARY(${LUAJIT_LIBRARIES} luajit)
+  IF (${LUAJIT_LIBRARIES})
+     MESSAGE("Found LuaJIT, linking with: " ${LUAJIT_LIBRARIES})
+     TARGET_LINK_LIBRARIES(svmutil luajit)
+  ELSE(${LUAJIT_LIBRARIES})
+     MESSAGE("Did not find LuaJIT, attempting to link with vanilla Lua")
+     TARGET_LINK_LIBRARIES(svmutil lua)
+  ENDIF(${LUAJIT_LIBRARIES})
+ENDIF(LUALIB)
+
 INSTALL(TARGETS svmutil LIBRARY DESTINATION ${Torch_INSTALL_LUA_CPATH_SUBDIR})
 
 SET(src)
 SET(luasrc init.lua data.lua)
 
 ADD_TORCH_PACKAGE(svm "${src}" "${luasrc}")
-ADD_TORCH_DOK(dok svm "Machine Learning" "Support Vector Machines" 3.99)
