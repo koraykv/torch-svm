@@ -17,15 +17,14 @@ This is wrapper around the well known LIBLINEAR library (http://www.csie.ntu.edu
 Requirements
 ------------
 
-Only Torch7 (http://github.com/andresy/torch)
+Only Torch7 (http://github.com/torch/torch7)
 
 Building
 --------
 
 ```
 git clone git://github.com/koraykv/torch-svm.git
-cd torch-svm
-torch-pkg deploy
+luarocks make
 ```
 
 Using
