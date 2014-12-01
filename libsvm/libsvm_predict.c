@@ -305,6 +305,8 @@ static int libsvm_predict(lua_State *L)
 						return 0;
 				}
 			}
+			
+			lua_pop(L,1);
 		}
 
 		model_ = Malloc(struct svm_model, 1);
