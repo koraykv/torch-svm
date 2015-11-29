@@ -27,22 +27,19 @@ end
 
 -- read libsvm formatted data file into a label and data tensor
 -- returns two outputs, the data and label
-function svm.ascread(fname)
+function svm.ascread(fname, zero_based)
+    if zero_based == nil then zero_based = false end  -- If the indices starts with 0 or 1 (default)
+
 	print('Reading ' .. fname)
 	local function readline(line)
 		local label = tonumber(string.match(line,'^([%+%-]?%s?%d+)'))
 		if not label then
 			error('could not read label')
 		end
-		-- label can be anything
-		-- if label ~= 1 and label ~=-1 then
-		-- 	error('label has to be +1 or -1')
-		-- end
 		local vals = {}
 		local inds = {}
-		local indcntr = 0
+		local indcntr = zero_based and 0 or 1
 		for ind,val in string.gmatch(line,'(%d+):([%+%-]?%d?%.?%d+)') do
-			indcntr = indcntr + 1
 			ind = tonumber(ind)
 			val = tonumber(val)
 			if not ind or not val then
@@ -53,13 +50,14 @@ function svm.ascread(fname)
 			end
 			table.insert(inds,ind)
 			table.insert(vals,val)
+            indcntr = indcntr + 1
 		end
 		return label,{torch.IntTensor(inds),torch.FloatTensor(vals)}
 	end
 	local data = {}
 	local maxdim = 0
-	local npos = 0
-	local nneg = 0
+    local labels = {}
+    setmetatable(labels, {__index = function () return 0 end})
 	local minsparse = math.huge
 	local maxsparse = 0
 	for line in io.lines(fname) do
@@ -67,12 +65,17 @@ function svm.ascread(fname)
 		table.insert(data,{lbl,vals})
 		-- stats
 		maxdim = math.max(maxdim,vals[1][-1])
-		if lbl == 1 then npos = npos + 1 else nneg = nneg + 1 end
+
+        labels[lbl] = labels[lbl] + 1
+
 		minsparse = math.min(minsparse,vals[1]:size(1))
 		maxsparse = math.max(maxsparse,vals[1]:size(1))
 	end
-	io.write(string.format("# of positive samples = %d\n",npos))
-	io.write(string.format("# of negative samples = %d\n",nneg))
+
+    for l, c in pairs(labels) do
+        io.write(string.format("# of samples of label %d = %d\n", l, c))
+    end
+
 	io.write(string.format("# of total    samples = %d\n",#data))
 	io.write(string.format("# of max dimensions   = %d\n",maxdim))
 	io.write(string.format("Min # of dims = %d\n",minsparse))
