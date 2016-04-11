@@ -13,7 +13,7 @@
 
 static void exit_with_help()
 {
-	printf("Usage: model = load_model(string model_file_name);\n");
+	printf("Usage: model = load_model(model_file_name);\n");
 }
 
 
