@@ -200,17 +200,17 @@ void predict(lua_State *L, struct svm_model *model_, const int predict_probabili
 		sumpt += predict_label*target_label;
 		++total;
 	}
-	if(svm_type==NU_SVR || svm_type==EPSILON_SVR)
-	{
-		printf("Mean squared error = %g (regression)\n",error/total);
-		printf("Squared correlation coefficient = %g (regression)\n",
-			((total*sumpt-sump*sumt)*(total*sumpt-sump*sumt))/
-			((total*sumpp-sump*sump)*(total*sumtt-sumt*sumt))
-			);
-	}
-	else
-		printf("Accuracy = %g%% (%d/%d) (classification)\n",
-			(double)correct/total*100,correct,total);
+//	if(svm_type==NU_SVR || svm_type==EPSILON_SVR)
+//	{
+//		printf("Mean squared error = %g (regression)\n",error/total);
+//		printf("Squared correlation coefficient = %g (regression)\n",
+//			((total*sumpt-sump*sumt)*(total*sumpt-sump*sumt))/
+//			((total*sumpp-sump*sump)*(total*sumtt-sumt*sumt))
+//			);
+//	}
+//	else
+//		printf("Accuracy = %g%% (%d/%d) (classification)\n",
+//			(double)correct/total*100,correct,total);
 
 	// label = res[1]
 	luaT_pushudata(L,label,"torch.DoubleTensor");

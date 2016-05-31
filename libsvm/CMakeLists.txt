@@ -5,6 +5,8 @@ SET(src
 	init.c
 	libsvm_train.c 
 	libsvm_predict.c 
+	libsvm_load_model.c
+	libsvm_save_model.c
 	libsvm/svm.h
 	libsvm/svm.cpp
 )
